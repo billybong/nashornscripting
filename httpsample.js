@@ -3,17 +3,32 @@
 # As Nashorn does not have http capabilities through XMLHttpRequest (DOM API), we have to use regular Java classes instead.
 # This sample shows how this can be acheived without depending on any third party libraries. Just a standard Java 8 JDK.
 # Make sure to have JAVA_HOME/bin on your PATH for the shebang to work. Then just chmod +x away and run...
+# Alternatively if you're on a non *nix OS, start with jjs -scritping httpsample.js
+#
 ####################################################################################################################################*/
+var url = "https://api.github.com/users/billybong/repos";
+var response;
 
+if(`curl --help`.startsWith("Usage:")){
+    //curl variant, preferable for *nix
+    print("using curl...");
+    response = $EXEC("curl ${url}");
+}else{
+    //naive java implementation variant, if curl is not available
+    print("using native");
+    response = httpGet("https://api.github.com/users/billybong/repos").data;
+}
 
-var response = httpGet("https://api.github.com/users/billybong/repos");
-
-var repos = JSON.parse(response.data);
-print(JSON.stringify(repos[0], null, "  "));
+var repos = JSON.parse(response);
+print(<<EOD);
+id : ${repos[0].id}
+name : ${repos[0].name}
+full name : ${repos[0].full_name}
+owner : ${repos[0].owner.login}
+EOD
 
 var json = {id: 1, someValue: "1234"};
-
-httpPost("http://postcatcher.in/catchers/54520b3242bfb30200001520", JSON.stringify(json));
+httpPost("http://postcatcher.in/catchers/5452274a3a57d0020000086b", JSON.stringify(json));
 
 /*************
 UTILITY FUNCTIONS
@@ -31,11 +46,11 @@ function httpPost(theUrl, data, contentType){
     var con = new java.net.URL(theUrl).openConnection();
 
     con.requestMethod = "POST";
-    con.setRequestProperty("content-type", contentType);
+    con.setRequestProperty("Content-Type", contentType);
 
     // Send post request
     con.doOutput=true;
-    write(con.outputStream);
+    write(con.outputStream, data);
 
     return asResponse(con);
 }
