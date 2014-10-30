@@ -1,9 +1,9 @@
 #!/usr/bin/env jjs
-####################################################################################################################################
+/*####################################################################################################################################
 # As Nashorn does not have http capabilities through XMLHttpRequest (DOM API), we have to use regular Java classes instead.
 # This sample shows how this can be acheived without depending on any third party libraries. Just a standard Java 8 JDK.
 # Make sure to have JAVA_HOME/bin on your PATH for the shebang to work. Then just chmod +x away and run...
-####################################################################################################################################
+####################################################################################################################################*/
 
 
 var response = httpGet("https://api.github.com/users/billybong/repos");
